@@ -19,6 +19,7 @@ function activate(context) {
             aiderProcess.stdin.write(`/drop ${filePath}\n`);
         }
     });
+
     let disposable = vscode.commands.registerCommand('aider.add', function () {
         // The code you place here will be executed every time your command is executed
         // Get the currently selected file in VS Code
@@ -32,13 +33,6 @@ function activate(context) {
         if (aiderProcess) {
             aiderProcess.stdin.write(`/add ${filePath}\n`);
         }
-    });
-
-    context.subscriptions.push(disposable);
-
-    disposable = vscode.commands.registerCommand('aider.drop', function () {
-        // The code you place here will be executed every time your command is executed
-        // TODO: Implement drop functionality
     });
 
     context.subscriptions.push(disposable);

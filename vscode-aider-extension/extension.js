@@ -12,6 +12,13 @@ function activate(context) {
             }
         }
     });
+
+    vscode.workspace.onDidCloseTextDocument((document) => {
+        let filePath = document.fileName;
+        if (aiderProcess) {
+            aiderProcess.stdin.write(`/drop ${filePath}\n`);
+        }
+    });
     let disposable = vscode.commands.registerCommand('aider.add', function () {
         // The code you place here will be executed every time your command is executed
         // Get the currently selected file in VS Code

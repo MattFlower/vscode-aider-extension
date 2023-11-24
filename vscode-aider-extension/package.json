@@ -1,0 +1,43 @@
+{
+    "name": "aider",
+    "displayName": "Aider",
+    "description": "VSCode extension for running Aider",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.50.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "aider.add",
+                "title": "Add File to Aider"
+            },
+            {
+                "command": "aider.drop",
+                "title": "Drop File from Aider"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^3.8.3",
+        "vscode": "^1.1.37",
+        "tslint": "^5.12.1",
+        "mocha": "^7.1.1",
+        "@types/node": "^12.11.1",
+        "@types/mocha": "^7.0.2"
+    }
+}

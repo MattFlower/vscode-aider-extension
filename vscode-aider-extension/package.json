@@ -22,6 +22,14 @@
             {
                 "command": "aider.drop",
                 "title": "Drop File from Aider"
+            },
+            {
+                "command": "aider.open",
+                "title": "Open Aider"
+            },
+            {
+                "command": "aider.close",
+                "title": "Close Aider"
             }
         ]
     },

@@ -1,5 +1,8 @@
 const vscode = require('vscode');
 
+const { exec } = require('child_process');
+let aiderProcess = null;
+
 function activate(context) {
     let disposable = vscode.commands.registerCommand('aider.add', function () {
         // The code you place here will be executed every time your command is executed
@@ -11,6 +14,25 @@ function activate(context) {
     disposable = vscode.commands.registerCommand('aider.drop', function () {
         // The code you place here will be executed every time your command is executed
         // TODO: Implement drop functionality
+    });
+
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('aider.open', function () {
+        // The code you place here will be executed every time your command is executed
+        // Start the Aider process
+        aiderProcess = exec('aider');
+    });
+
+    context.subscriptions.push(disposable);
+
+    disposable = vscode.commands.registerCommand('aider.close', function () {
+        // The code you place here will be executed every time your command is executed
+        // Terminate the Aider process
+        if (aiderProcess) {
+            aiderProcess.kill();
+            aiderProcess = null;
+        }
     });
 
     context.subscriptions.push(disposable);

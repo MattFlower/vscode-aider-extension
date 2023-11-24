@@ -6,7 +6,17 @@ let aiderProcess = null;
 function activate(context) {
     let disposable = vscode.commands.registerCommand('aider.add', function () {
         // The code you place here will be executed every time your command is executed
-        // TODO: Implement add functionality
+        // Get the currently selected file in VS Code
+        let activeEditor = vscode.window.activeTextEditor;
+        if (!activeEditor) {
+            return; // No open text editor
+        }
+        let filePath = activeEditor.document.fileName;
+
+        // Send the "/add <filename>" command to the Aider process
+        if (aiderProcess) {
+            aiderProcess.stdin.write(`/add ${filePath}\n`);
+        }
     });
 
     context.subscriptions.push(disposable);

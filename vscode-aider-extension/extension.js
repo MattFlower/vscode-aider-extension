@@ -4,6 +4,14 @@ const { exec } = require('child_process');
 let aiderProcess = null;
 
 function activate(context) {
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+        if (editor) {
+            let filePath = editor.document.fileName;
+            if (aiderProcess) {
+                aiderProcess.stdin.write(`/add ${filePath}\n`);
+            }
+        }
+    });
     let disposable = vscode.commands.registerCommand('aider.add', function () {
         // The code you place here will be executed every time your command is executed
         // Get the currently selected file in VS Code

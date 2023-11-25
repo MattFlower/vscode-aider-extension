@@ -19,7 +19,7 @@ vscode.workspace.onDidChangeConfiguration((e) => {
         // Add all currently open files
         vscode.window.visibleTextEditors.forEach((editor) => {
             let filePath = editor.document.fileName;
-            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles');
+            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
             let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
             if (!shouldIgnore && terminal) {
                 terminal.sendText(`/add ${filePath}`);

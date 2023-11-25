@@ -24,6 +24,11 @@
                         "type": "string"
                     },
                     "description": "List of regexes that match filenames that won't automatically be added to the Aider terminal process."
+                },
+                "aider.openaiApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "OpenAI API Key."
                 }
             }
         },

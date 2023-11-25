@@ -1,7 +1,8 @@
 const vscode = require('vscode');
 
 const { exec } = require('child_process');
-const terminal = vscode.window.createTerminal('Aider');
+let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
+const terminal = vscode.window.createTerminal('Aider', '/bin/sh', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
 
 function activate(context) {
     vscode.window.onDidChangeActiveTextEditor((editor) => {

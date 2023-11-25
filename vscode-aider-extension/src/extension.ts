@@ -1,13 +1,17 @@
 import * as vscode from 'vscode';
-import { exec } from 'child_process';
 
-let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
+
 let terminal: vscode.Terminal | null = null;
-if (openaiApiKey) {
+
+function createTerminal() {
+    let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
     let aiderCommandLine = vscode.workspace.getConfiguration('aider').get('commandLine');
-    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; ${aiderCommandLine}`]);
-} else {
-    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `${aiderCommandLine}`])
+
+    if (openaiApiKey) {
+        terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; ${aiderCommandLine}`]);
+    } else {
+        terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `${aiderCommandLine}`])
+    }
 }
 
 vscode.workspace.onDidChangeConfiguration((e) => {
@@ -19,12 +23,7 @@ vscode.workspace.onDidChangeConfiguration((e) => {
         }
 
         // Restart the Aider terminal with the new API key
-        openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
-        if (openaiApiKey) {
-            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec ${aiderCommandLine}`]);
-        } else {
-            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `exec ${aiderCommandLine}`])
-        }
+        createTerminal();
 
         // Add all currently open files
         vscode.window.visibleTextEditors.forEach((editor) => {
@@ -94,6 +93,10 @@ export function activate(context: vscode.ExtensionContext) {
     disposable = vscode.commands.registerCommand('aider.open', function () {
         // The code you place here will be executed every time your command is executed
         // Show the existing Aider terminal
+        if (!terminal) {
+            createTerminal();
+        }
+
         if (terminal) {
             terminal.show();
         }

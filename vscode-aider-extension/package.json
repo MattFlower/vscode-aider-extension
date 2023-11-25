@@ -3,7 +3,10 @@
     "displayName": "Aider",
     "description": "VSCode extension for running Aider",
     "version": "0.0.1",
-    "repository": "https://github.com/MattFlower/vscode-aider-extension",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/MattFlower/vscode-aider-extension"
+    },
     "engines": {
         "vscode": "^1.50.0"
     },

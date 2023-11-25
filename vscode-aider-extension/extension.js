@@ -4,6 +4,30 @@ const { exec } = require('child_process');
 let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
 const terminal = vscode.window.createTerminal('Aider', '/bin/sh', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
 
+vscode.workspace.onDidChangeConfiguration((e) => {
+    if (e.affectsConfiguration('aider.openaiApiKey')) {
+        // Stop the Aider terminal
+        if (terminal) {
+            terminal.kill();
+            terminal = null;
+        }
+
+        // Restart the Aider terminal with the new API key
+        openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
+        terminal = vscode.window.createTerminal('Aider', '/bin/sh', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
+
+        // Add all currently open files
+        vscode.window.visibleTextEditors.forEach((editor) => {
+            let filePath = editor.document.fileName;
+            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles');
+            let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
+            if (!shouldIgnore && terminal) {
+                terminal.sendText(`/add ${filePath}`);
+            }
+        });
+    }
+});
+
 function activate(context) {
     vscode.window.onDidChangeActiveTextEditor((editor) => {
         if (editor) {

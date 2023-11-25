@@ -10,6 +10,5 @@
         "esModuleInterop": true,
         "allowJs": true
     },
-    "include": ["*", "src/extension.ts"],
     "exclude": ["node_modules", ".vscode-test"]
 }

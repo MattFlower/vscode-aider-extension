@@ -7,7 +7,9 @@ function activate(context) {
     vscode.window.onDidChangeActiveTextEditor((editor) => {
         if (editor) {
             let filePath = editor.document.fileName;
-            if (terminal) {
+            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles');
+            let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
+            if (!shouldIgnore && terminal) {
                 terminal.sendText(`/add ${filePath}`);
             }
         }

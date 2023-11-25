@@ -14,6 +14,19 @@
     ],
     "main": "./extension.js",
     "contributes": {
+        "configuration": {
+            "title": "Aider",
+            "properties": {
+                "aider.ignoreFiles": {
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "List of regexes that match filenames that won't automatically be added to the Aider terminal process."
+                }
+            }
+        },
         "commands": [
             {
                 "command": "aider.add",

@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.onDidChangeActiveTextEditor((editor) => {
         if (editor) {
             let filePath = editor.document.fileName;
-            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles');
+            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
             let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
             if (!shouldIgnore && terminal) {
                 terminal.sendText(`/add ${filePath}`);

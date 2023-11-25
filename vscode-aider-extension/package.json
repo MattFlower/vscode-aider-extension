@@ -10,10 +10,6 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:aider.add",
-        "onCommand:aider.drop",
-        "onCommand:aider.open",
-        "onCommand:aider.close"
     ],
     "main": "./out/extension.js",
     "contributes": {

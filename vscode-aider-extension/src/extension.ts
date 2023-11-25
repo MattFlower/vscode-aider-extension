@@ -1,17 +1,59 @@
 import * as vscode from 'vscode';
+import { AiderInterface, AiderTerminal } from './AiderTerminal';
 
+let terminal: AiderInterface | null = null;
+let filesOpen = new Set<string>();
 
-let terminal: vscode.Terminal | null = null;
+function createTerminal() { 
+    let openaiApiKey: string | null | undefined = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
+    let aiderCommandLine: string = vscode.workspace.getConfiguration('aider').get('commandLine') ?? 'aider';
+    terminal = new AiderTerminal(openaiApiKey, aiderCommandLine);
+}
 
-function createTerminal() {
-    let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
-    let aiderCommandLine = vscode.workspace.getConfiguration('aider').get('commandLine') + " | bash";
-
-    if (openaiApiKey) {
-        terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; ${aiderCommandLine}`]);
-    } else {
-        terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `${aiderCommandLine}`])
+function updateEditors() {
+    if (!terminal) {
+        console.log("No terminals, not going to update editors");
+        return;
     }
+
+    let newFilesOpen = new Set<string>();
+    vscode.workspace.textDocuments.forEach((document) => {
+        if (document.uri.scheme === "file" && document.fileName && terminal?.isWorkspaceFile(document.fileName)) {
+            newFilesOpen.add(document.fileName);
+        }
+    });
+
+    let opened: string[] = [];
+    let closed: string[] = [];
+    
+    newFilesOpen.forEach((item) => {
+        if (!filesOpen.has(item)) {
+            opened.push(item);
+        }
+    });
+
+    filesOpen.forEach((item) => {
+        if (!newFilesOpen.has(item)) {
+            closed.push(item);
+        }
+    });
+
+    let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
+    let ignoreFilesRegex = ignoreFiles.map((regex) => new RegExp(regex));
+    
+    opened.forEach((item) => {
+        if (!ignoreFilesRegex.some((regex) => regex.test(item))) {
+            terminal?.addFile(item);
+        }
+    });
+
+    closed.forEach((item) => {
+        if (!ignoreFilesRegex.some((regex) => regex.test(item))) {
+            terminal?.dropFile(item);
+        }
+    });
+
+    filesOpen = newFilesOpen;
 }
 
 vscode.workspace.onDidChangeConfiguration((e) => {
@@ -24,35 +66,39 @@ vscode.workspace.onDidChangeConfiguration((e) => {
 
         // Restart the Aider terminal with the new API key
         createTerminal();
-
+        
         // Add all currently open files
-        vscode.window.visibleTextEditors.forEach((editor) => {
-            let filePath = editor.document.fileName;
-            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
-            let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
-            if (!shouldIgnore && terminal) {
-                terminal.sendText(`/add ${filePath}`);
-            }
-        });
+        updateEditors();
     }
 });
 
 export function activate(context: vscode.ExtensionContext) {
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-        if (editor) {
-            let filePath = editor.document.fileName;
-            let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
-            let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
-            if (!shouldIgnore && terminal) {
-                terminal.sendText(`/add ${filePath}`);
+    vscode.workspace.onDidOpenTextDocument((document) => {
+        if (terminal) {
+            if (document.uri.scheme === "file" && document.fileName && terminal.isWorkspaceFile(document.fileName)) {
+                let filePath = document.fileName;
+                let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
+                let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
+
+                if (!shouldIgnore) {
+                    terminal.addFile(filePath);
+                    filesOpen.add(document.fileName);
+                }
             }
         }
     });
-
     vscode.workspace.onDidCloseTextDocument((document) => {
-        let filePath = document.fileName;
         if (terminal) {
-            terminal.sendText(`/drop ${filePath}`);
+            if (document.uri.scheme === "file" && document.fileName && terminal.isWorkspaceFile(document.fileName)) {
+                let filePath = document.fileName;
+                let ignoreFiles = vscode.workspace.getConfiguration('aider').get('ignoreFiles') as string[];
+                let shouldIgnore = ignoreFiles.some((regex) => new RegExp(regex).test(filePath));
+
+                if (!shouldIgnore) {
+                    terminal.dropFile(filePath);
+                    filesOpen.delete(document.fileName);
+                }
+            }
         }
     });
 
@@ -67,7 +113,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Send the "/add <filename>" command to the Aider process
         if (terminal) {
-            terminal.sendText(`/add ${filePath}`);
+            filesOpen.add(filePath);
+            terminal.addFile(filePath);
         }
     });
 
@@ -84,13 +131,22 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Send the "/drop <filename>" command to the Aider process
         if (terminal) {
-            terminal.sendText(`/drop ${filePath}`);
+            filesOpen.delete(filePath);
+            terminal.dropFile(filePath);
         }
     });
     
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('aider.syncFiles', function () {
+        console.log("Syncing files");
+        updateEditors();
+    });
+
+    context.subscriptions.push(disposable);
+
     disposable = vscode.commands.registerCommand('aider.open', function () {
+        console.log("Opening Aider terminal");
         // The code you place here will be executed every time your command is executed
         // Show the existing Aider terminal
         if (!terminal) {
@@ -100,6 +156,8 @@ export function activate(context: vscode.ExtensionContext) {
         if (terminal) {
             terminal.show();
         }
+
+        updateEditors();
     });
 
     context.subscriptions.push(disposable);

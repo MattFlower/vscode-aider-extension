@@ -5,7 +5,7 @@ let terminal: vscode.Terminal | null = null;
 
 function createTerminal() {
     let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
-    let aiderCommandLine = vscode.workspace.getConfiguration('aider').get('commandLine') + "; bash";
+    let aiderCommandLine = vscode.workspace.getConfiguration('aider').get('commandLine') + " | bash";
 
     if (openaiApiKey) {
         terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; ${aiderCommandLine}`]);

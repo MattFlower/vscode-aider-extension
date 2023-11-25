@@ -59,10 +59,10 @@ function activate(context) {
 
     disposable = vscode.commands.registerCommand('aider.open', function () {
         // The code you place here will be executed every time your command is executed
-        // Start the Aider process
-        const terminal = vscode.window.createTerminal('Aider');
-        terminal.sendText('aider');
-        terminal.show();
+        // Show the existing Aider terminal
+        if (terminal) {
+            terminal.show();
+        }
     });
 
     context.subscriptions.push(disposable);

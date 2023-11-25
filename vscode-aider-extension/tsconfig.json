@@ -7,7 +7,9 @@
         "sourceMap": true,
         "rootDir": "src",
         "strict": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "allowJs": true
     },
+    "include": ["src/**/*"],
     "exclude": ["node_modules", ".vscode-test"]
 }

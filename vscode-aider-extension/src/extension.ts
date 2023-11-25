@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { exec } from 'child_process';
 
 let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
-let terminal = vscode.window.createTerminal('Aider', '/bin/sh', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
+let terminal: vscode.Terminal | null = vscode.window.createTerminal('Aider', '/bin/sh', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
 
 vscode.workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration('aider.openaiApiKey')) {

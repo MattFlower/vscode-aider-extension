@@ -4,9 +4,10 @@ import { exec } from 'child_process';
 let openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
 let terminal: vscode.Terminal | null = null;
 if (openaiApiKey) {
-    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; aider`]);
+    let aiderCommandLine = vscode.workspace.getConfiguration('aider').get('commandLine');
+    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; ${aiderCommandLine}`]);
 } else {
-    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', 'aider'])
+    terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `${aiderCommandLine}`])
 }
 
 vscode.workspace.onDidChangeConfiguration((e) => {
@@ -20,9 +21,9 @@ vscode.workspace.onDidChangeConfiguration((e) => {
         // Restart the Aider terminal with the new API key
         openaiApiKey = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
         if (openaiApiKey) {
-            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec $SHELL`]);
+            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `export OPENAI_API_KEY=${openaiApiKey}; exec ${aiderCommandLine}`]);
         } else {
-            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', 'exec $SHELL'])
+            terminal = vscode.window.createTerminal('Aider', '/bin/bash', ['-c', `exec ${aiderCommandLine}`])
         }
 
         // Add all currently open files

@@ -32,6 +32,11 @@
                     "type": "string",
                     "default": "",
                     "description": "OpenAI API Key."
+                },
+                "aider.commandLine": {
+                    "type": "string",
+                    "default": "aider",
+                    "description": "Aider Command Line."
                 }
             }
         },

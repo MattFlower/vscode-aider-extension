@@ -15,10 +15,8 @@ export class AiderTerminal implements AiderInterface {
     _terminal: vscode.Terminal;
     _workingDirectory: string;
     _onDidCloseTerminal: () => void;
-    _onDidCloseTerminal: () => void;
 
     constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void) {
-        this._onDidCloseTerminal = onDidCloseTerminal;
         // Try to find a good working path, which is harder than it seems
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
             let workspaceFolder = vscode.workspace.workspaceFolders[0];
@@ -52,11 +50,6 @@ export class AiderTerminal implements AiderInterface {
         this._terminal = vscode.window.createTerminal(opts);
         this._terminal.show();
         this._terminal.sendText(aiderCommand);
-        vscode.window.onDidCloseTerminal((closedTerminal) => {
-            if (closedTerminal === this._terminal) {
-                this._onDidCloseTerminal();
-            }
-        });
         vscode.window.onDidCloseTerminal((closedTerminal) => {
             if (closedTerminal === this._terminal) {
                 this._onDidCloseTerminal();

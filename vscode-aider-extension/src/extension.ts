@@ -7,7 +7,7 @@ let filesOpen = new Set<string>();
 function createTerminal() { 
     let openaiApiKey: string | null | undefined = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
     let aiderCommandLine: string = vscode.workspace.getConfiguration('aider').get('commandLine') ?? 'aider';
-    terminal = new AiderTerminal(openaiApiKey, aiderCommandLine);
+    terminal = new AiderTerminal(openaiApiKey, aiderCommandLine, handleTerminalClose);
 }
 
 function updateEditors() {

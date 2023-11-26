@@ -10,6 +10,11 @@ function createTerminal() {
     terminal = new AiderTerminal(openaiApiKey, aiderCommandLine, handleTerminalClose);
 }
 
+function handleTerminalClose() {
+    terminal?.dispose();
+    terminal = null;
+}
+
 function updateEditors() {
     if (!terminal) {
         console.log("No terminals, not going to update editors");
@@ -139,16 +144,12 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.syncFiles', function () {
-        console.log("Syncing files");
         updateEditors();
     });
 
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.open', function () {
-        console.log("Opening Aider terminal");
-        // The code you place here will be executed every time your command is executed
-        // Show the existing Aider terminal
         if (!terminal) {
             createTerminal();
         }

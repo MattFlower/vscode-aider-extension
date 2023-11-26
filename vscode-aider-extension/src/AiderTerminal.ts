@@ -48,13 +48,16 @@ export class AiderTerminal implements AiderInterface {
         }
 
         this._terminal = vscode.window.createTerminal(opts);
-        this._terminal.show();
-        this._terminal.sendText(aiderCommand);
+
+        this._onDidCloseTerminal = onDidCloseTerminal;
         vscode.window.onDidCloseTerminal((closedTerminal) => {
             if (closedTerminal === this._terminal) {
                 this._onDidCloseTerminal();
             }
         });
+
+        this._terminal.show();
+        this._terminal.sendText(aiderCommand);
     }
 
     private computeWorkingDirectory(filePath: string): string {

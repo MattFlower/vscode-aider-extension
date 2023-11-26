@@ -57,6 +57,11 @@ function syncAiderAndVSCodeFiles() {
     filesThatAiderKnows = filesThatVSCodeKnows;
 }
 
+/**
+ * Find a working directory for Aider.
+ * 
+ * @returns A promise pointing to a working directory for Aider.
+ */
 async function findWorkingDirectory(): Promise<string> {
     // If there is more than one workspace folder, ask the user which workspace they want aider for
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 1) {
@@ -93,7 +98,13 @@ async function findWorkingDirectory(): Promise<string> {
         filePath = components.join("/");
         return findGitDirectoryInSelfOrParents(filePath);
     } else {
-        return "/";
+        let otherFolderThen = vscode.window.showOpenDialog({canSelectFiles: false, canSelectFolders: true, canSelectMany: false});
+        let otherFolder = await otherFolderThen;
+        if (otherFolder) {
+            return findGitDirectoryInSelfOrParents(otherFolder[0].fsPath);
+        } else {
+            throw new Error("Starting Aider requires a workspace folder.  Aborting...");
+        }
     }
 }
 

@@ -20,12 +20,20 @@ I'm really new at writing VSCode plugins.  Given that I like Aider, it might not
 
 > Write a vscode extension for running aider.  The extension should keep track of open files, it should run \add and \drop to keep the commands inside of the tool synchronized with the open file list inside of vscode.
 
-This command created about 70% of V1 of this plugin.  Alas, there are some things are not quite right yet.  
+This command created about 70% of version 0.0.1 of this plugin.  Alas, there are some things are not quite right yet.  
 
-1. This plugin does a poor job at dealing with multiple open folders in the workspace.  I'm aware of it, but it's going to require some surgery to fix.  Right now, I just assume workspace[0] is your workspace.
-2. When the plugin first opens, it should be automatically adding any currently open files to Aider.  For whatever reason, the command I'm using `vscode.workspace.textDocuments` doesn't seem to return all the tabs I have open all of the time.  I've also tried `vscode.window.visibleTextEditors`, it also refused to return all the open tabs all of the time.  This mostly seems to happen when I've first starting up vscode and it's using previously saved tabs.  
-3. For reasons that I don't fully understand, VSCode doesn't provide a way to read stdout of a terminal.  I would much prefer to read the "Git working dir" from that stdout.  Without it, I look for .git projects at or above the workspace[0] dir.  If that doesn't work, I look for the first parent directory of the current file until I find a .git dir.  This has worked for me so far, but I'd really prefer if there were a way to read stdout.  Supposedly it's coming in a future version of vscode.
+1. This plugin does a poor job at dealing with multiple open folders in the workspace.  I'm aware of it, but it's going to require some surgery to fix.  Right now, I just assume vscode.workspace is your workspace.
+2. When the plugin first opens, it should be automatically adding any currently open files to Aider.  For whatever reason, the command I'm using `vscode.workspace.textDocuments` doesn't seem to return all the tabs I have open all of the time.  I've also tried `vscode.window.visibleTextEditors`, it also refused to return all the open tabs all of the time.  This mostly seems to happen when I've first starting up VSCode and it's using previously saved tabs.  
+3. For reasons that I don't fully understand, VSCode doesn't provide a way to read stdout of a terminal.  I would much prefer to read the "Git working dir" from that stdout.  Without it, I look for .git projects at or above the vscode.workspace dir.  If that doesn't work, I look for the first parent directory of the current file until I find a .git dir.  This has worked for me so far, but I'd really prefer if there were a way to read stdout.  Supposedly it's coming in a future version of vscode.
 4. The Python plugin has a default setting that always activates the current python environment for every new terminal.  This includes the terminal I create for aider.  I wouldn't mind, except it pollutes the output of aider.  The only solution I have so far is to turn off the property "Terminal: Activate Environment" in the Python settings.  Keep in mind, you'll need to source your venvs yourself if you turn this off.
+5. Aider won't enter "Pretty Mode" in the VSCode Terminal.  Consequently, output isn't colored.  I don't have context on why that doesn't work, but I know that it won't even obey the --pretty command line option at this point.
+
+## What Works
+
+1. Opening or closing tabs seems /add and /drop files correctly.
+2. I haven't had any problem using aider to make further modifications to the code.
+3. Configuration options seem to work, though I haven't really used the "ignore files" one very much.
+
 
 ## Setting up the plugin
 
@@ -38,3 +46,7 @@ I would suggest doing three things:
 ## Using the plugin
 
 Run the "Aider Open" command from your Command Palette to start the plugin.
+
+## Pull Requests and the Future of this Plugin.
+
+I'm enjoying writing this plugin, and I'm enjoying using it.  If you think you know the answer to any of the problems listed above (or other ones I haven't noticed yet!) I'm definitely open to Pull Requests.

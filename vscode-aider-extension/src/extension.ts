@@ -9,10 +9,12 @@ let filesThatAiderKnows = new Set<string>();
  * Create the Aider interface (currently a terminal) and start it.
  */
 async function createAider() { 
-    let openaiApiKey: string | null | undefined = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
-    let aiderCommandLine: string = vscode.workspace.getConfiguration('aider').get('commandLine') ?? 'aider';
+    const config = vscode.workspace.getConfiguration('aider');
+    let openaiApiKey: string | null | undefined = config.get('openaiApiKey');
+    let aiderCommandLine: string = config.get('commandLine') ?? 'aider';
+    let workingDirectory: string | undefined = config.get('workingDirectory');
 
-    findWorkingDirectory().then((workingDirectory) => {
+    findWorkingDirectory(workingDirectory).then((workingDirectory) => {
         aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);
     }).catch((err) => {
         vscode.window.showErrorMessage(`Error starting Aider: ${err}`);
@@ -62,7 +64,10 @@ function syncAiderAndVSCodeFiles() {
  * 
  * @returns A promise pointing to a working directory for Aider.
  */
-async function findWorkingDirectory(): Promise<string> {
+async function findWorkingDirectory(overridePath?: string): Promise<string> {
+    if (overridePath && overridePath.trim() !== '') {
+        return findGitDirectoryInSelfOrParents(overridePath);
+    }
     // If there is more than one workspace folder, ask the user which workspace they want aider for
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 1) {
         let items: vscode.QuickPickItem[] = [];

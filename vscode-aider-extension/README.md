@@ -45,7 +45,7 @@ I would suggest doing three things:
 
 ## Using the plugin
 
-Run the "Aider Open" command from your Command Palette to start the plugin.
+Run the "Aider Open" command from your Command Palette to start the plugin.  
 
 ## Pull Requests and the Future of this Plugin.
 

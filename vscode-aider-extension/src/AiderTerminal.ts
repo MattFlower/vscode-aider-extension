@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import fs = require('fs');
 
 
 export interface AiderInterface {
@@ -13,29 +12,18 @@ export interface AiderInterface {
 
 export class AiderTerminal implements AiderInterface {
     _terminal: vscode.Terminal;
-    _workingDirectory: string;
+    _workingDirectory: string = '';
     _onDidCloseTerminal: () => void;
 
-    constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void) {
-        // Try to find a good working path, which is harder than it seems
-        if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-            let workspaceFolder = vscode.workspace.workspaceFolders[0];
-            this._workingDirectory = this.computeWorkingDirectory(workspaceFolder.uri.fsPath);
-        } else if (vscode.window.activeTextEditor?.document?.fileName) {
-            let filePath = vscode.window.activeTextEditor.document.fileName;
-            let components = filePath.split("/")
-            components.pop();
-            filePath = components.join("/");
-            this._workingDirectory = this.computeWorkingDirectory(filePath);
-        } else {
-            this._workingDirectory = "/";
-        }    
+    constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
+        this._workingDirectory = workingDirectory;
 
         let opts;
         if (openaiAPIKey) {
-           opts = {
+        opts = {
                 'name': "Aider",
                 'shellPath': "/bin/bash",
+                'cwd': this._workingDirectory,
                 'env': {
                     "OPENAI_API_KEY": openaiAPIKey
                 },
@@ -43,6 +31,7 @@ export class AiderTerminal implements AiderInterface {
         } else {
             opts = {
                 'name': "Aider",
+                'cwd': this._workingDirectory,
                 'shellPath': "/bin/bash",
             };
         }
@@ -58,22 +47,6 @@ export class AiderTerminal implements AiderInterface {
 
         this._terminal.show();
         this._terminal.sendText(aiderCommand);
-    }
-
-    private computeWorkingDirectory(filePath: string): string {
-        let dirs: string[] = filePath.split("/").filter((item) => { return item !== ""});
-        while (dirs.length > 0) {
-            try {
-                let dir = "/" + dirs.join("/") + "/.git"; 
-                if (fs.statSync(dir) !== undefined) {
-                    return "/" + dirs.join("/") + "/";
-                }
-            } catch(err) {
-                dirs.pop();
-            }
-        }
-
-        return "/";
     }
 
     private getRelativeDirectory(filePath: string) {

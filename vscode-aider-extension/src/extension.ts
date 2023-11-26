@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { AiderInterface, AiderTerminal } from './AiderTerminal';
+import fs = require('fs');
 
 let aider: AiderInterface | null = null;
 let filesThatAiderKnows = new Set<string>();
@@ -7,10 +8,15 @@ let filesThatAiderKnows = new Set<string>();
 /**
  * Create the Aider interface (currently a terminal) and start it.
  */
-function createAider() { 
+async function createAider() { 
     let openaiApiKey: string | null | undefined = vscode.workspace.getConfiguration('aider').get('openaiApiKey');
     let aiderCommandLine: string = vscode.workspace.getConfiguration('aider').get('commandLine') ?? 'aider';
-    aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose);
+
+    findWorkingDirectory().then((workingDirectory) => {
+        aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);
+    }).catch((err) => {
+        vscode.window.showErrorMessage(`Error starting Aider: ${err}`);
+    });
 }
 
 /**
@@ -29,11 +35,6 @@ function handleAiderClose() {
  * about it.  This might lead to duplicate /add statements.
  */
 function syncAiderAndVSCodeFiles() {
-    if (!aider) {
-        console.log("Aider not started yet, so can't sync files");
-        return;
-        
-    }
     let filesThatVSCodeKnows = new Set<string>();
     vscode.workspace.textDocuments.forEach((document) => {
         if (document.uri.scheme === "file" && document.fileName && aider?.isWorkspaceFile(document.fileName)) {
@@ -54,6 +55,62 @@ function syncAiderAndVSCodeFiles() {
     closed.forEach((item) => { aider?.dropFile(item); });
 
     filesThatAiderKnows = filesThatVSCodeKnows;
+}
+
+async function findWorkingDirectory(): Promise<string> {
+    // If there is more than one workspace folder, ask the user which workspace they want aider for
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 1) {
+        let items: vscode.QuickPickItem[] = [];
+        for (let workspaceFolder of vscode.workspace.workspaceFolders) {
+            items.push({label: workspaceFolder.name, description: workspaceFolder.uri.fsPath});
+        }
+        items.push({label: "Select a folder...", description: ""});
+
+        let workspaceThen = vscode.window.showQuickPick(items, {placeHolder: "Select a folder to use with Aider"});
+        let workspace = await workspaceThen;
+        if (workspace) {
+            if (workspace.label === "Select a folder...") {
+                let otherFolderThen = vscode.window.showOpenDialog({canSelectFiles: false, canSelectFolders: true, canSelectMany: false});
+                let otherFolder = await otherFolderThen;
+                if (otherFolder) {
+                    return findGitDirectoryInSelfOrParents(otherFolder[0].fsPath);
+                } else {
+                    throw new Error("Starting Aider requires a workspace folder.  Aborting...");
+                }
+            }
+
+            return findGitDirectoryInSelfOrParents(workspace.description!);
+        } else {
+            throw new Error("Starting Aider requires a workspace folder.  Aborting...");
+        }
+    } else if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length == 1) {
+        let workspaceFolder = vscode.workspace.workspaceFolders[0];
+        return findGitDirectoryInSelfOrParents(workspaceFolder.uri.fsPath);
+    } else if (vscode.window.activeTextEditor?.document?.fileName) {
+        let filePath = vscode.window.activeTextEditor.document.fileName;
+        let components = filePath.split("/");
+        components.pop();
+        filePath = components.join("/");
+        return findGitDirectoryInSelfOrParents(filePath);
+    } else {
+        return "/";
+    }
+}
+
+function findGitDirectoryInSelfOrParents(filePath: string): string {
+    let dirs: string[] = filePath.split("/").filter((item) => { return item !== ""});
+    while (dirs.length > 0) {
+        try {
+            let dir = "/" + dirs.join("/") + "/.git"; 
+            if (fs.statSync(dir) !== undefined) {
+                return "/" + dirs.join("/") + "/";
+            }
+        } catch(err) {
+            dirs.pop();
+        }
+    }
+
+    return "/";
 }
 
 /**
@@ -107,6 +164,10 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     let disposable = vscode.commands.registerCommand('aider.add', function () {
+        if (!aider) {
+            vscode.window.showErrorMessage("Aider is not running.  Please run the 'Open Aider' command first.");
+        }
+
         // The code you place here will be executed every time your command is executed
         // Get the currently selected file in VS Code
         let activeEditor = vscode.window.activeTextEditor;
@@ -125,6 +186,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.drop', function () {
+        if (!aider) {
+            vscode.window.showErrorMessage("Aider is not running.  Please run the 'Open Aider' command first.");
+        }
+
         // The code you place here will be executed every time your command is executed
         // Get the currently selected file in VS Code
         let activeEditor = vscode.window.activeTextEditor;
@@ -143,6 +208,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.syncFiles', function () {
+        if (!aider) {
+            vscode.window.showErrorMessage("Aider is not running.  Please run the 'Open Aider' command first.");
+        }
+
         syncAiderAndVSCodeFiles();
     });
 
@@ -163,6 +232,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('aider.close', function () {
+        if (!aider) {
+            vscode.window.showErrorMessage("Aider is not running.  Please run the 'Open Aider' command first.");
+        }
+
         // The code you place here will be executed every time your command is executed
         // Terminate the Aider process
         if (aider) {

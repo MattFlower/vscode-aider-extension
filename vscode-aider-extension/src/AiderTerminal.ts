@@ -30,12 +30,24 @@ export class AiderTerminal implements AiderInterface {
             this._workingDirectory = "/";
         }    
 
-
-        this._terminal = vscode.window.createTerminal("Aider", "/bin/bash");
-        this._terminal.show();
+        let opts;
         if (openaiAPIKey) {
-            this._terminal.sendText(`export OPENAI_API_KEY=${openaiAPIKey}`);
+           opts = {
+                'name': "Aider",
+                'shellPath': "/bin/bash",
+                'env': {
+                    "OPENAI_API_KEY": openaiAPIKey
+                },
+            };
+        } else {
+            opts = {
+                'name': "Aider",
+                'shellPath': "/bin/bash",
+            };
         }
+
+        this._terminal = vscode.window.createTerminal(opts);
+        this._terminal.show();
         this._terminal.sendText(aiderCommand);
     }
 

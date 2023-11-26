@@ -21,11 +21,6 @@
         "configuration": {
             "title": "Aider",
             "properties": {
-                "aider.workingDirectory": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Set the working directory for Aider. Leave empty to use the workspace root or the directory of the active file."
-                },
                 "aider.ignoreFiles": {
                     "type": "array",
                     "default": [],
@@ -43,6 +38,11 @@
                     "type": "string",
                     "default": "aider",
                     "description": "Aider Command Line."
+                },
+                "aider.workingDirectory": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Set the working directory for Aider. Leave empty to use the workspace root or the directory of the active file."
                 }
             }
         },

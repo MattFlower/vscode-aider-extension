@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduce a ChangeLog
 - Fix startup when you have multiple top-level folders in your workspace.  Now you'll be asked explicitly which one to use.  
-- Introduce a configuration object for the working directory so it can be set manually.
+- Introduce a configuration object for the working directory so it can be set manually, this is intended to be used with workspace settings as opposed to user settings.
 - Explicitly set the current working directory.
 - Introduce error messages when you try to run a command that won't work before you've opened aider.
 - Internal refactoring to make things a little bit more readable.

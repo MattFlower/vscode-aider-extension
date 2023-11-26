@@ -35,16 +35,32 @@ This command created about 70% of version 0.0.1 of this plugin.  Alas, there are
 
 ## Setting up the plugin
 
-I would suggest doing three things:
+First and foremost, you need to have aider installed.  If you don't have this done already, head over to the [Aider website](https://aider.chat) to get it installed.
+
+After that's done, I would suggest doing three things:
 
 1. Open the Aider settings and set OPENAI_API_KEY.
 2. If you have trouble running Aider because it can't find the aider executable, you may need to set the full path to the executable in the "Command Line" setting for Aider.  For example, you may need to set it to something like `/opt/homebrew/bin/aider`.
 3. If you want to use GPT 4.5 Turbo, you'll probably have to update the command line further, to something like `aider --model gpt-4-1106-preview`
 
+If you have any trouble whatsoever with setting the working directory for aider, I encourage you to set the "working directory" setting.  This will prevent the plugin from trying to figure out the working directory by itself.
+
 ## Using the plugin
 
-Run the "Aider Open" command from your Command Palette to start the plugin.  
+Run the "Aider Open" command from your Command Palette to start the plugin.  This should always be the first step, as no other commands will work until it's open.
 
-## Pull Requests and the Future of this Plugin.
+Aider relies on the user to specify the files that will need to change in order to accomplish the commands you give it.  If you've used aider before, you'll be familiar with running `/add filename` and `/drop filename` to accomplish this.  When using this plugin, whatever files you have open in your editor will automatically be in the aider chat. 
+
+If you're ready to have Aider make some changes to your site, go to Aider terminal window and do some pair programming with Aider.  If you are new to Aider, I recommend checking out the Aider web site's [examples](https://aider.chat/examples/) page.  
+
+## Who Wrote Aider?
+
+The aider tool was written by [Paul Gauthier](https://github.com/paul-gauthier).  I am not a contributor on that project, but after using it extensively, I ([Matt Flower](https://github.com/mattflower)) decided to write the Aider plugin for VSCode.
+
+## Reporting Bugs
+
+Please report any bugs to the [issues page](https://github.com/MattFlower/vscode-aider-extension/issues) on the GitHub site for this extension.
+
+## Pull Requests and the Future of this Plugin
 
 I'm enjoying writing this plugin, and I'm enjoying using it.  If you think you know the answer to any of the problems listed above (or other ones I haven't noticed yet!) I'm definitely open to Pull Requests.

@@ -68,7 +68,7 @@ function syncAiderAndVSCodeFiles() {
  */
 async function findWorkingDirectory(overridePath?: string): Promise<string> {
     if (overridePath && overridePath.trim() !== '') {
-        return findGitDirectoryInSelfOrParents(overridePath);
+        return overridePath;
     }
     // If there is more than one workspace folder, ask the user which workspace they want aider for
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 1) {

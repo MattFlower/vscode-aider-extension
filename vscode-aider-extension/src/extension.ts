@@ -13,6 +13,8 @@ async function createAider() {
     let openaiApiKey: string | null | undefined = config.get('openaiApiKey');
     let aiderCommandLine: string = config.get('commandLine') ?? 'aider';
     let workingDirectory: string | undefined = config.get('workingDirectory');
+    let shellCommand: string | undefined = config.get('shellCommand');
+    let shellArgs: string[] | undefined = config.get('shellArgs');
 
     findWorkingDirectory(workingDirectory).then((workingDirectory) => {
         aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);

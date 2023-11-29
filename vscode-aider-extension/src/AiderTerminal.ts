@@ -17,23 +17,20 @@ export class AiderTerminal implements AiderInterface {
 
     constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
         this._workingDirectory = workingDirectory;
+        console.log("Working directory: " + this._workingDirectory);
 
-        let opts;
+        let opts: vscode.TerminalOptions = {
+            'name': "Aider",
+            'cwd': this._workingDirectory,
+        };
+
         if (openaiAPIKey) {
-        opts = {
-                'name': "Aider",
-                'shellPath': "/bin/bash",
-                'cwd': this._workingDirectory,
-                'env': {
-                    "OPENAI_API_KEY": openaiAPIKey
-                },
-            };
-        } else {
-            opts = {
-                'name': "Aider",
-                'cwd': this._workingDirectory,
-                'shellPath': "/bin/bash",
-            };
+            opts['env'] = { "OPENAI_API_KEY": openaiAPIKey };
+        }
+
+        if (process.platform === 'win32') {
+            opts['shellPath'] = 'cmd.exe';
+            opts['shellArgs'] = ['/k', 'cd ' + this._workingDirectory];
         }
 
         this._terminal = vscode.window.createTerminal(opts);

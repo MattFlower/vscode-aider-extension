@@ -2,7 +2,7 @@
     "name": "aider",
     "displayName": "Aider",
     "description": "VSCode extension for running Aider",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "publisher": "MattFlower",
     "repository": {
         "type": "git",
@@ -37,7 +37,7 @@
                 "aider.commandLine": {
                     "type": "string",
                     "default": "aider",
-                    "description": "Aider Command Line."
+                    "description": "Set that command to run aider.  This can be a path to a binary or a command that is available on the path.  You may also include parameters to aider."
                 },
                 "aider.workingDirectory": {
                     "type": "string",

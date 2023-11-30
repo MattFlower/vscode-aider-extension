@@ -1,6 +1,10 @@
-import { findWorkingDirectory } from '../src/extension';
+import { findWorkingDirectory } from '../extension';
 import * as vscode from 'vscode';
-
+//import * as fs from 'fs';
+let fs = require('fs');
+let path = require('path');
+jest.mock('fs');
+jest.mock('path');
 
 describe('findWorkingDirectory should support paths from windows and mac', () => {
     it('should find the working directory in windows', async () => {
@@ -27,7 +31,27 @@ describe('findWorkspaceDirectory should support a single workspace folder on win
             }]
         });
 
+        jest.spyOn(fs, 'statSync').mockReturnValueOnce(undefined).mockReturnValueOnce({});
+        jest.replaceProperty(path, 'sep', '/');
+
         const workingDirectory = await findWorkingDirectory('');
-        expect(workingDirectory).toEqual('/Users/user/Documents/project/src/');
+        expect(workingDirectory).toEqual('/Users/user/Documents/project/');
+    });
+
+    it ('should find the .git folder on windows', async () => {
+        // Mock the workspaceFolders property
+        Object.defineProperty(vscode.workspace, 'workspaceFolders', {
+            get: () => [{
+                uri: vscode.Uri.file("C:\\Users\\user\\Documents\\project\\src\\"),
+                name: "project1",
+                index: 0
+            }]
+        });
+
+        jest.spyOn(fs, 'statSync').mockReturnValueOnce(undefined).mockReturnValueOnce({});
+        jest.replaceProperty(path, 'sep', '\\');
+
+        const workingDirectory = await findWorkingDirectory('');
+        expect(workingDirectory).toEqual('C:\\Users\\user\\Documents\\project\\');
     });
 });

@@ -1,11 +1,5 @@
 
 
-const workspace = {
-    getConfiguration: jest.fn(),
-    onDidChangeConfiguration: jest.fn(),
-    workspaceFolders: new Array([]),
-};
-
 const Uri = {
     file: (fsPath) => {
         return {

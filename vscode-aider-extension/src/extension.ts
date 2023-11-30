@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { AiderInterface, AiderTerminal } from './AiderTerminal';
 import fs = require('fs');
+import path = require('path');
+import process = require('node:process');
 
 let aider: AiderInterface | null = null;
 let filesThatAiderKnows = new Set<string>();
@@ -66,7 +68,7 @@ function syncAiderAndVSCodeFiles() {
  * 
  * @returns A promise pointing to a working directory for Aider.
  */
-async function findWorkingDirectory(overridePath?: string): Promise<string> {
+export async function findWorkingDirectory(overridePath?: string): Promise<string> {
     if (overridePath && overridePath.trim() !== '') {
         return overridePath;
     }
@@ -116,12 +118,24 @@ async function findWorkingDirectory(overridePath?: string): Promise<string> {
 }
 
 function findGitDirectoryInSelfOrParents(filePath: string): string {
-    let dirs: string[] = filePath.split("/").filter((item) => { return item !== ""});
+    let dirs: string[] = filePath.split(path.sep).filter((item) => { return item !== ""});
     while (dirs.length > 0) {
         try {
-            let dir = "/" + dirs.join("/") + "/.git"; 
+            let isWin = path.sep === "\\";
+            let dir;
+            if (dirs && isWin) {
+                dir = dirs.join("\\") + "\\.git";
+            } else {
+                dir = "/" + dirs.join("/") + "/.git";
+            }
             if (fs.statSync(dir) !== undefined) {
-                return "/" + dirs.join("/") + "/";
+                if (isWin) {
+                    return dirs.join("\\") + "\\";
+                } else {
+                    return "/" + dirs.join("/") + "/";
+                }
+            } else {
+                dirs.pop();
             }
         } catch(err) {
             dirs.pop();

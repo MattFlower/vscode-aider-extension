@@ -18,7 +18,11 @@ describe('findWorkingDirectory should support paths from windows and mac', () =>
 
 describe('findWorkspaceDirectory should support a single workspace folder on windows and mac', () => {
     it ('should find the .git folder in mac', async () => {
-        vscode.workspace.workspaceFolders = ["/Users/user/Documents/project/src/"];
+        vscode.workspace.workspaceFolders = [{
+            uri: vscode.Uri.file("/Users/user/Documents/project/src/"),
+            name: "project",
+            index: 0
+        }];
 
         const path = '/Users/user/Documents/project/src/';
         const workingDirectory = await findWorkingDirectory(path);

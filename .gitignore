@@ -3,3 +3,4 @@
 vscode-aider-extension/node_modules
 vscode-aider-extension/out/
 vscode-aider-extension/package-lock.json
+vscode-aider-extension/.vscode

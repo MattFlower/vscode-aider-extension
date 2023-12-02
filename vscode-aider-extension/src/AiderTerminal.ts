@@ -3,8 +3,10 @@ import * as vscode from 'vscode';
 
 export interface AiderInterface {
     addFile(filePath: string) : void;
+    addFiles(filePaths: string[]) : void;
     dispose() : void;
     dropFile(filePath: string) : void;
+    dropFiles(filePaths: string[]) : void;
     isWorkspaceFile(filePath: string) : boolean;
     sendCommand(command: string) : void;    
     show(): void;
@@ -57,8 +59,24 @@ export class AiderTerminal implements AiderInterface {
         this._terminal.sendText(`/add ${this.getRelativeDirectory(filePath)}`);
     }
 
+    addFiles(filePaths: string[]) : void {
+        if (filePaths.length === 0) {
+            return;
+        }
+
+        this._terminal.sendText(`/add ${filePaths.map((filePath) => this.getRelativeDirectory(filePath)).join(' ')}`);
+    }
+
     dropFile(filePath: string) : void {
         this._terminal.sendText(`/drop ${this.getRelativeDirectory(filePath)}`);
+    }
+
+    dropFiles(filePaths: string[]) : void {
+        if (filePaths.length === 0) {
+            return;
+        }
+
+        this._terminal.sendText(`/drop ${filePaths.map((filePath) => this.getRelativeDirectory(filePath)).join(' ')}`);
     }
 
     dispose() : void {

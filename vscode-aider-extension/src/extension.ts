@@ -54,10 +54,10 @@ function syncAiderAndVSCodeFiles() {
     let ignoreFilesRegex = ignoreFiles.map((regex) => new RegExp(regex));
     
     opened = opened.filter((item) => !ignoreFilesRegex.some((regex) => regex.test(item)));
-    opened.forEach((item) => { aider?.addFile(item); });
+    aider?.addFiles(opened);
 
     closed = closed.filter((item) => !ignoreFilesRegex.some((regex) => regex.test(item)));
-    closed.forEach((item) => { aider?.dropFile(item); });
+    aider?.dropFiles(closed);
 
     filesThatAiderKnows = filesThatVSCodeKnows;
 }

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.8] - 2023-11-28
 
-- Support for Windows
+- Fixed defect #1, but that unfortunately exposed other Windows defects.  So, windows doesn't really work.
+- Add unit tests.
+- Created an icon for AiderExtension (thanks, ChatGPT and Dall-E)
 
 ## [0.0.7] - 2023-11-26
 

@@ -22,16 +22,16 @@ I'm really new at writing VSCode plugins.  Given that I like Aider, it might not
 
 This command created about 70% of version 0.0.1 of this plugin.  Alas, there are some things are not quite right yet.  
 
-1. When the plugin first opens, it should be automatically adding any currently open files to Aider.  For whatever reason, the command I'm using `vscode.workspace.textDocuments` doesn't seem to return all the tabs I have open all of the time.  I've also tried `vscode.window.visibleTextEditors`, it also refused to return all the open tabs all of the time.  This mostly seems to happen when I've first starting up VSCode and it's using previously saved tabs.  
-2. The Python plugin has a default setting that always activates the current python environment for every new terminal.  This includes the terminal I create for aider.  I wouldn't mind, except it pollutes the output of aider.  The only solution I have so far is to turn off the property "Terminal: Activate Environment" in the Python settings.  Keep in mind, you'll need to source your VENVs yourself if you turn this off.
-3. Aider won't enter "Pretty Mode" in the VSCode Terminal.  Consequently, output isn't colored.  I don't have context on why that doesn't work, but I know that it won't even obey the --pretty command line option at this point.
+1. This plugin doesn't work correctly if you run Microsoft Windows.  While you can open an Aider terminal successfully, when you open or close a file, Aider doesn't recognize carriage returns in the commands you send to it.  If tried "\r\n", "\n", and String.fromCharCode() but to no avail.  
+2. When the plugin first opens, it should be automatically adding open files to Aider.  For whatever reason, the command I'm using `vscode.workspace.textDocuments` doesn't seem to return all the tabs I have open all of the time.  I've also tried `vscode.window.visibleTextEditors`, it also refused to return all the open tabs all of the time.  This mostly seems to happen when I've first starting up VSCode and it's using previously saved tabs.  
+3. The Python plugin has a default setting that always activates the current python environment for every new terminal.  This includes the terminal I create for aider.  I wouldn't mind, except it pollutes the output of aider.  The only solution I have so far is to turn off the property "Terminal: Activate Environment" in the Python settings.  Keep in mind, you'll need to source your VENVs yourself if you turn this off.
+4. Aider won't enter "Pretty Mode" in the VSCode Terminal.  Consequently, output isn't colored.  I don't have context on why that doesn't work, but I know that it won't even obey the --pretty command line option at this point.
 
 ## What Works
 
 1. Opening or closing tabs seems /add and /drop files correctly.
 2. I haven't had any problem using aider to make further modifications to the code.
 3. Configuration options seem to work, though I haven't really used the "ignore files" one very much.
-
 
 ## Setting up the plugin
 

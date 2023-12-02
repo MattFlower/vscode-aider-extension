@@ -17,7 +17,6 @@ export class AiderTerminal implements AiderInterface {
 
     constructor(openaiAPIKey: string | null | undefined, aiderCommand: string, onDidCloseTerminal: () => void, workingDirectory: string) {
         this._workingDirectory = workingDirectory;
-        console.log("Working directory: " + this._workingDirectory);
 
         let opts: vscode.TerminalOptions = {
             'name': "Aider",

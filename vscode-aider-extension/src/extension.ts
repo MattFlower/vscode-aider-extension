@@ -17,6 +17,8 @@ async function createAider() {
 
     findWorkingDirectory(workingDirectory).then((workingDirectory) => {
         aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);
+        syncAiderAndVSCodeFiles();
+        aider.show();
     }).catch((err) => {
         vscode.window.showErrorMessage(`Error starting Aider: ${err}`);
     });
@@ -255,7 +257,6 @@ export function activate(context: vscode.ExtensionContext) {
             aider.show();
         }
 
-        syncAiderAndVSCodeFiles();
     });
 
     context.subscriptions.push(disposable);

@@ -60,6 +60,10 @@
                 "title": "Sync Open Files to Aider"
             },
             {
+                "command": "aider.debugInfo",
+                "title": "Aider Debug Info"
+            },
+            {
                 "command": "aider.open",
                 "title": "Open Aider"
             },

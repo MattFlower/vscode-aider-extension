@@ -5,6 +5,7 @@ import path = require('path');
 
 let aider: AiderInterface | null = null;
 let filesThatAiderKnows = new Set<string>();
+let calculatedWorkingDirectory: string | undefined = undefined;
 
 /**
  * Create the Aider interface (currently a terminal) and start it.
@@ -16,6 +17,7 @@ async function createAider() {
     let workingDirectory: string | undefined = config.get('workingDirectory');
 
     findWorkingDirectory(workingDirectory).then((workingDirectory) => {
+        calculatedWorkingDirectory = workingDirectory;
         aider = new AiderTerminal(openaiApiKey, aiderCommandLine, handleAiderClose, workingDirectory);
         syncAiderAndVSCodeFiles();
         aider.show();
@@ -216,6 +218,29 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(disposable);
 
+    disposable = vscode.commands.registerCommand('aider.debugInfo', function () {
+        console.log(`===============================`)
+        console.log(`Working directory: ${calculatedWorkingDirectory}`);
+        console.log(`Config working directory: ${vscode.workspace.getConfiguration('aider').get('workingDirectory')}`);
+        console.log(`Files that aider knows about:`);
+        filesThatAiderKnows.forEach((file) => {
+            console.log(`  ${file}`);
+        });
+        console.log(`Aider object: ${aider}`);
+        console.log(`VSCode Workspace Files:`);
+        vscode.workspace.textDocuments.forEach((document) => {
+            console.log(`  ${document.fileName}`);
+        });
+        console.log(`VSCode Active Tab Files:`);
+        vscode.window.visibleTextEditors.forEach((editor) => {
+            console.log(`  ${editor.document.fileName}`);
+        });
+        console.log(`===============================`)
+        vscode.window.showInformationMessage("Open Help->Toggle Developer Tools to see debug info in the 'Console' tab.");
+    });
+
+    context.subscriptions.push(disposable)
+
     disposable = vscode.commands.registerCommand('aider.drop', function () {
         if (!aider) {
             vscode.window.showErrorMessage("Aider is not running.  Please run the 'Open Aider' command first.");
@@ -256,7 +281,6 @@ export function activate(context: vscode.ExtensionContext) {
         if (aider) {
             aider.show();
         }
-
     });
 
     context.subscriptions.push(disposable);

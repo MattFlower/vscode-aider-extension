@@ -275,6 +275,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     disposable = vscode.commands.registerCommand('aider.open', function () {
         if (!aider) {
+            filesThatAiderKnows.clear();
             createAider();
         }
 
@@ -293,6 +294,7 @@ export function activate(context: vscode.ExtensionContext) {
         // The code you place here will be executed every time your command is executed
         // Terminate the Aider process
         if (aider) {
+            filesThatAiderKnows.clear();
             aider.dispose();
             aider = null;
         }

@@ -51,7 +51,7 @@ Run the "Aider Open" command from your Command Palette to start the plugin.  Thi
 
 Aider relies on the user to specify the files that will need to change in order to accomplish the commands you give it.  If you've used aider before, you'll be familiar with running `/add filename` and `/drop filename` to accomplish this.  When using this plugin, whatever files you have open in your editor will automatically be in the aider chat. 
 
-If you're ready to have Aider make some changes to your site, go to Aider terminal window and do some pair programming with Aider.  If you are new to Aider, I recommend checking out the Aider web site's [examples](https://aider.chat/examples/) page.  
+If you're ready to have Aider make some changes to your site, go to Aider terminal window and do some pair programming with Aider.  If you are new to Aider, I recommend checking out the Aider web site's [examples](https://aider.chat/examples/README.html) page.  
 
 ## Who Wrote Aider?
 
